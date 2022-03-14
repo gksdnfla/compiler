@@ -1,0 +1,16 @@
+export enum SyntaxKind {
+    NumberToken = 'NumberToken',
+    WhiteSpaceToken = 'WhiteSpaceToken',
+    PlusToken = 'PlusToken',
+    MinusToken = 'MinusToken',
+    StarToken = 'StarToken',
+    SlashToken = 'SlashToken',
+    PercentToken = 'PercentToken',
+    OpenParenthesisToken = 'OpenParenthesisToken',
+    BadToken = 'BadToken',
+    EndOfFileToken = 'EndOfFileToken',
+    NumberExpression = 'NumberExpression',
+    BinaryExpressionSyntax = 'BinaryExpressionSyntax',
+    ParenthesizedExpression = 'ParenthesizedExpression',
+    CloseParenthesisToken = 'CloseParenthesisToken',
+}
