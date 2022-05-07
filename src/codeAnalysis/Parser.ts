@@ -1,6 +1,7 @@
 import { SyntaxKind } from './SyntaxKind';
 import { SyntaxToken } from './SyntaxToken';
 import { SyntaxTree } from './SyntaxTree';
+import { SyntaxFacts } from './SyntaxFacts';
 import { ExpressionSyntax } from './ExpressionSyntax';
 import { NumberExpresstionSyntax } from './NumberExpressionSyntax';
 import { BinaryExpressionSyntax } from './BinaryExpressionSyntax';
@@ -77,7 +78,7 @@ export class Parser {
         let left: ExpressionSyntax = this.parsePrimaryExpression();
 
         while (true) {
-            let precedence = this.getBinaryOperatorPrecedence(
+            let precedence = SyntaxFacts.getBinaryOperatorPrecedence(
                 this.current.kind
             );
             if (precedence === 0 || precedence <= parentPrecedence) break;
@@ -88,20 +89,6 @@ export class Parser {
         }
 
         return left;
-    }
-
-    private getBinaryOperatorPrecedence(kind: SyntaxKind): number {
-        switch (kind) {
-            case SyntaxKind.StarToken:
-            case SyntaxKind.SlashToken:
-            case SyntaxKind.PercentToken:
-                return 2;
-            case SyntaxKind.PlusToken:
-            case SyntaxKind.MinusToken:
-                return 1;
-            default:
-                return 0;
-        }
     }
 
     private parsePrimaryExpression():
