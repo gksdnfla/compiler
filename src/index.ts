@@ -7,7 +7,7 @@ import {
     SyntaxTree,
 } from './codeAnalysis';
 
-const content: string = '2 + 3 * 2 - 0 + 10';
+const content: string = '-2 + 3 * 2';
 
 const parser: Parser = new Parser(content);
 const syntaxTree: SyntaxTree = parser.parse();

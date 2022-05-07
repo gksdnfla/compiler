@@ -1,4 +1,5 @@
 import { BinaryExpressionSyntax } from './BinaryExpressionSyntax';
+import { UnaryExpressionSyntax } from './UnaryExpressionSyntax';
 import { Evaluator } from './Evaluator';
 import { ExpressionSyntax } from './ExpressionSyntax';
 import { Lexer } from './Lexer';
@@ -12,6 +13,7 @@ import { SyntaxTree } from './SyntaxTree';
 
 export {
     BinaryExpressionSyntax,
+    UnaryExpressionSyntax,
     Evaluator,
     ExpressionSyntax,
     Lexer,

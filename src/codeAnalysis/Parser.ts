@@ -7,6 +7,7 @@ import { NumberExpresstionSyntax } from './NumberExpressionSyntax';
 import { BinaryExpressionSyntax } from './BinaryExpressionSyntax';
 import { ParenthesizedExpressionSyntax } from './ParenthesizedExpressionSyntax';
 import { Lexer } from './Lexer';
+import { UnaryExpressionSyntax } from './UnaryExpressionSyntax';
 
 export class Parser {
     private readonly tokens: SyntaxToken[];
@@ -75,7 +76,20 @@ export class Parser {
     }
 
     private parseExpression(parentPrecedence: number = 0): ExpressionSyntax {
-        let left: ExpressionSyntax = this.parsePrimaryExpression();
+        let unaryOperatorPrecedence: number =
+            SyntaxFacts.getUnaryOperatorPrecedence(this.current.kind);
+        let left;
+
+        if (
+            unaryOperatorPrecedence !== 0 &&
+            unaryOperatorPrecedence >= parentPrecedence
+        ) {
+            let operatorToken = this.nextToken();
+            let operand = this.parsePrimaryExpression();
+            left = new UnaryExpressionSyntax(operatorToken, operand);
+        } else {
+            left = this.parsePrimaryExpression();
+        }
 
         while (true) {
             let precedence = SyntaxFacts.getBinaryOperatorPrecedence(

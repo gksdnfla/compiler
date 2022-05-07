@@ -2,6 +2,7 @@ import { SyntaxKind } from './SyntaxKind';
 import { ExpressionSyntax } from './ExpressionSyntax';
 import { NumberExpresstionSyntax } from './NumberExpressionSyntax';
 import { BinaryExpressionSyntax } from './BinaryExpressionSyntax';
+import { UnaryExpressionSyntax } from './UnaryExpressionSyntax';
 import { ParenthesizedExpressionSyntax } from './ParenthesizedExpressionSyntax';
 
 export class Evaluator {
@@ -20,9 +21,24 @@ export class Evaluator {
             return node.numberToken.value || 0;
         }
 
+        if (node instanceof UnaryExpressionSyntax) {
+            let operand = this.evaluateExpression(node.right);
+
+            switch (node.operatorToken.kind) {
+                case SyntaxKind.PlusToken:
+                    return operand;
+                case SyntaxKind.MinusToken:
+                    return -operand;
+                default:
+                    throw new Error(
+                        `Unexpected binary operator ${node.operatorToken.kind}`
+                    );
+            }
+        }
+
         if (node instanceof BinaryExpressionSyntax) {
-            let leftNumber: number = this.evaluateExpression(node.leftToken);
-            let rightNumber: number = this.evaluateExpression(node.rightToken);
+            let leftNumber: number = this.evaluateExpression(node.left);
+            let rightNumber: number = this.evaluateExpression(node.right);
 
             switch (node.operatorToken.kind) {
                 case SyntaxKind.PlusToken:
@@ -37,7 +53,7 @@ export class Evaluator {
                     return leftNumber % rightNumber;
                 default:
                     throw new Error(
-                        `Unexpected binary operator ${node.operatorToken.value}`
+                        `Unexpected binary operator ${node.operatorToken.kind}`
                     );
             }
         }
