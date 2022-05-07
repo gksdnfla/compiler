@@ -65,7 +65,7 @@ export class Parser {
     }
 
     public parse(): SyntaxTree {
-        const expression: ExpressionSyntax = this.parseTerm();
+        const expression: ExpressionSyntax = this.parseExpression();
         const endOfFileToken: SyntaxToken = this.matchToken(
             SyntaxKind.EndOfFileToken
         );
@@ -73,50 +73,35 @@ export class Parser {
         return new SyntaxTree(this._diagnostics, expression, endOfFileToken);
     }
 
-    private parseTerm(): ExpressionSyntax {
-        let leftToken: ExpressionSyntax = this.parsePrimaryExpression();
+    private parseExpression(parentPrecedence: number = 0): ExpressionSyntax {
+        let left: ExpressionSyntax = this.parsePrimaryExpression();
 
-        while (
-            this.current.kind === SyntaxKind.PlusToken ||
-            this.current.kind === SyntaxKind.MinusToken ||
-            this.current.kind === SyntaxKind.StarToken ||
-            this.current.kind === SyntaxKind.SlashToken ||
-            this.current.kind === SyntaxKind.PercentToken
-        ) {
-            let operatorToken: SyntaxToken = this.nextToken();
-            let rightToken = this.parseFactor();
-            leftToken = new BinaryExpressionSyntax(
-                leftToken,
-                operatorToken,
-                rightToken
+        while (true) {
+            let precedence = this.getBinaryOperatorPrecedence(
+                this.current.kind
             );
+            if (precedence === 0 || precedence <= parentPrecedence) break;
+
+            let operatorToken = this.nextToken();
+            let right = this.parseExpression(precedence);
+            left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
 
-        return leftToken;
+        return left;
     }
 
-    private parseFactor(): ExpressionSyntax {
-        let leftToken: ExpressionSyntax = this.parsePrimaryExpression();
-
-        while (
-            this.current.kind === SyntaxKind.StarToken ||
-            this.current.kind === SyntaxKind.SlashToken ||
-            this.current.kind === SyntaxKind.PercentToken
-        ) {
-            let operatorToken: SyntaxToken = this.nextToken();
-            let rightToken = this.parseTerm();
-            leftToken = new BinaryExpressionSyntax(
-                leftToken,
-                operatorToken,
-                rightToken
-            );
+    private getBinaryOperatorPrecedence(kind: SyntaxKind): number {
+        switch (kind) {
+            case SyntaxKind.StarToken:
+            case SyntaxKind.SlashToken:
+            case SyntaxKind.PercentToken:
+                return 2;
+            case SyntaxKind.PlusToken:
+            case SyntaxKind.MinusToken:
+                return 1;
+            default:
+                return 0;
         }
-
-        return leftToken;
-    }
-
-    parseExpression(): ExpressionSyntax {
-        return this.parseTerm();
     }
 
     private parsePrimaryExpression():
